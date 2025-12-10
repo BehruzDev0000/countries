@@ -1,0 +1,10 @@
+body{
+    background-color: #aeaeae;
+}
+.search-input{
+    background-image: url(../images/lupa.svg);
+    background-repeat: no-repeat;
+    background-size: 18px 18px;
+    background-position-x: 32px;
+    background-position-y: 20px;
+}
