@@ -3,80 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/main.css">
-    <link rel="icon" href="./images/uzb-flag.jpeg">
     <title>Countries</title>
-    <style type="text/tailwindcss"></style>
+    <link rel="icon" href="./images/uzb-flag.jpeg">
+    <style type="text/tailwindcss">
+    </style>
 </head>
-<body class="overflow-y-scrool">
+<body class="bg-gray-100 min-h-screen transition-colors duration-300 overflow-y-scroll">
+    <div id="loadingSpinner" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 scale-0 transition-transform duration-300">
+        <div class="loader"></div>
+    </div>
+
+    <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 scale-0 transition-transform duration-300">
+        <div class="modal-content bg-white rounded-lg p-8 max-w-md w-full mx-4 animate-slideIn relative">
+            <button id="closeModal" class="absolute top-3 right-3 text-2xl font-bold hover:text-red-500 transition">&times;</button>
+            <img id="modalImg" class="w-full h-48 object-cover rounded mb-4" src="" alt="">
+            <h3 id="modalName" class="text-xl font-bold mb-2"></h3>
+            <ul class="mt-3 space-y-2 text-sm">
+                <li><strong>Population:</strong> <span id="modalPopulation"></span></li>
+                <li><strong>Capital:</strong> <span id="modalCapital"></span></li>
+                <li><strong>Region:</strong> <span id="modalRegion"></span></li>
+                <li><strong>Area:</strong> <span id="modalArea"></span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 scale-0 transition-transform duration-300">
+        <div class="modal-content bg-white rounded-lg p-8 max-w-md w-full mx-4 animate-slideIn relative">
+            <h2 class="text-xl font-bold mb-4">Are you sure?</h2>
+            <div class="flex gap-2">
+                <button id="cancelDelete" class="w-[100px] py-2 text-[16px] cursor-pointer rounded-md bg-gray-500 font-semibold text-white hover:bg-gray-600 transition">Cancel</button>
+                <button id="deleteCountry" class="w-[100px] py-2 text-[16px] cursor-pointer rounded-md bg-red-500 font-semibold text-white hover:bg-red-600 transition">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-wrapper fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40 scale-0 transition-transform duration-300">
+        <div class="modal-content bg-white rounded-lg p-6 w-[600px] mx-4 animate-slideIn">
+            <h2 id="modalTitle" class="text-2xl font-bold mb-4">Create Country</h2>
+            <form class="create-form flex flex-col gap-5" autocomplete="off">
+                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500 outline-none focus:border-blue-500 transition" placeholder="Enter image url" name="image">
+                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500 outline-none focus:border-blue-500 transition" placeholder="Enter country name" name="name">
+                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500 outline-none focus:border-blue-500 transition" placeholder="Enter population" name="population">
+                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500 outline-none focus:border-blue-500 transition" placeholder="Enter country capital" name="capital">
+                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500 outline-none focus:border-blue-500 transition" placeholder="Enter region" name="region">
+                <input type="text" class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500 outline-none focus:border-blue-500 transition" placeholder="Enter area (optional)" name="area">
+                <button type="submit" class="w-full py-2 text-[20px] cursor-pointer rounded-md bg-green-500 font-semibold text-white hover:bg-green-600 transition">Create</button>
+            </form>
+        </div>
+    </div>
+
     <header class="bg-white flex items-center justify-between shadow shadow-md shadow-red-500 py-[24px]">
         <div class="w-[1200px] mx-auto px-5 flex items-center justify-between">
             <h1 class="font-bold text-[24px] leading-[32px]">Countries</h1>
             <div class="flex items-center gap-5">
-                <button class="like-btn cursor-pointer flex shadow shadow-sm shadow-red-500 items-center gap-1 justify-center w-[50px] h-[50px] border-[2px] border-black rounded-lg">
+                <button class="like-btn cursor-pointer flex shadow shadow-sm shadow-red-500 items-center gap-1 justify-center w-[50px] h-[50px] border-[2px] border-black rounded-lg hover:scale-110 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
-                     </svg>
-                     <span class="like-count"></span>
+                    </svg>
+                    <span class="like-count">0</span>
                 </button>
-                <button class="basket-btn cursor-pointer flex shadow shadow-sm shadow-red-500 items-center gap-1 justify-center px-5 h-[50px] border-[2px] border-black rounded-lg">
+                <button class="basket-btn cursor-pointer flex shadow shadow-sm shadow-red-500 items-center gap-1 justify-center px-5 h-[50px] border-[2px] border-black rounded-lg hover:scale-110 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cart-fill" viewBox="0 0 16 16">
                         <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
                     </svg>
-                     <span class="basket-count"></span>
+                    <span class="basket-count">0</span>
                 </button>
-                <button class="flex shadow shadow-sm shadow-red-500 items-center gap-1 justify-center w-[50px] h-[50px] border-[2px] border-black rounded-lg">
+                <button id="themeToggle" class="flex shadow shadow-sm shadow-red-500 items-center gap-1 justify-center w-[50px] h-[50px] border-[2px] border-black rounded-lg cursor-pointer hover:scale-110 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-moon-fill" viewBox="0 0 16 16">
                         <path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278"/>
-                      </svg>
+                    </svg>
                 </button>
-                <button onclick="handleCreateBtnClick()" class="flex shadow shadow-sm shadow-red-500 items-center gap-1 justify-center px-5 h-[50px] border-[2px] border-black rounded-lg cursor-pointer">
+                <button onclick="handleCreateBtnClick()" class="flex shadow shadow-sm shadow-red-500 items-center gap-1 justify-center px-5 h-[50px] border-[2px] border-black rounded-lg cursor-pointer hover:scale-110 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
-                      </svg>
-                     <span class="font-semibold text-[20px]">Create</span>
+                    </svg>
+                    <span class="font-semibold text-[20px]">Create</span>
                 </button>
             </div>
         </div>
     </header>
+
     <main class="mt-10"> 
         <section class="w-[1200px] mx-auto px-5">
             <div class="flex items-center justify-between">
-                <input class="search-input w-[480px] rounded-md outline-none shadow-md bg-white focus:shadow-red-500 py-[18px] pl-[74px] bg-white" type="text" placeholder="Search for a country…">
-                <select class="select-capitals w-[200px] rounded-md outline-none shadow-md bg-white focus:shadow-red-500 py-[18px] px-[24px] bg-white">
-                    <option value="0">All</option>
-                </select>
+                <input class="search-input w-[480px] rounded-md outline-none shadow-md bg-white focus:shadow-red-500 py-[18px] px-[24px] transition" type="text" placeholder="Search for a country…">
+                <div class="flex items-center gap-10 justify-center">
+                    <select name="sort-countries" id="sort-countries" class="sort-countries min-w-[200px] rounded-md outline-none shadow-md bg-white focus:shadow-red-500 py-[18px] px-[24px] cursor-pointer transition">
+                        <option value="default">Sort By</option>
+                        <option value="nameaz">Name by Alphabet</option>
+                        <option value="nameza">Name by Alphabet (Z-A)</option>
+                        <option value="populationaz">Population by Number</option>
+                        <option value="populationza">Population by Number (High - Low)</option>
+                    </select>
+                    <select class="select-capitals w-[200px] rounded-md outline-none shadow-md bg-white focus:shadow-red-500 py-[18px] px-[24px] cursor-pointer transition">
+                        <option value="all">All</option>
+                    </select>
+                </div>
             </div> 
             <ul class="country-list flex justify-between flex-wrap gap-[20px] mt-[48px]"></ul>
         </section>
     </main>
-    <div id="wrapper" class="modal-wrapper fixed flex !z-[9999] scale-0 duration-300 items-center h-[100vh] justify-center top-0 w-full bg-[#00000099]">
-            <form class="create-form w-[600px] flex flex-col gap-5 p-5 h-[400px] bg-white rounded-md" autocomplete="off">
-                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500" placeholder="Enter image url" name="image">
-                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500" placeholder="Enter country name" name="name">
-                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500" placeholder="Enter population" name="population">
-                <input type="text" required class="px-5 py-2 rounded-md w-full text-[20px] border-[2px] border-slate-500" placeholder="Enter country capital" name="capital">
-                <button class="create-btn w-full py-2 text-[20px] cursor-pointer rounded-md bg-green-500 font-semibold border-none text-white">Create</button>
-            </form>
-            
-    </div>
-    <div id="infoModal" class="fixed inset-0 bg-black/50 flex items-center justify-center scale-0 transition">
-  <div class="bg-white w-[400px] rounded-md p-8 relative">
-    <button id="closeModal" class="absolute top-3 right-3 font-bold text-xl">✕</button>
-
-    <img id="modalImg" class="w-full h-[200px] object-cover rounded" />
-    <h2 id="modalName" class="text-xl font-bold mt-4"></h2>
-
-    <ul class="mt-3 space-y-2 text-sm">
-      <li><b>Population:</b> <span id="modalPopulation"></span></li>
-      <li><b>Capital:</b> <span id="modalCapital"></span></li>
-      <li><b>Region:</b> <span id="modalRegion"></span></li>
-      <li><b>Area:</b> <span id="modalArea">
-    </ul>
-  </div>
-</div>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="./js/country.js"></script>
-    <script src="./js/main.js"></script>
+    <script src="./js/main.js">
+        
+    </script>
 </body>
 </html>
